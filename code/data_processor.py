@@ -1,10 +1,81 @@
 import pandas as pd
 
+wc_weights = {
+    'group stage': 1,
+    'second group stage': 2,
+    'round of 16': 4,
+    'quarter-finals': 6,
+    'quarter-final': 6,
+    'semi-finals': 8,
+    'semi-final': 8,
+    'third-place match': 8,
+    'final round': 10,
+    'final': 12,
+    'champ': 15
+}
+
+
 def load_olympic_data(data):
+    """
+    Loads Olympic results data from a CSV file
+    and calculates medal scores and game types
+
+    Parameters:
+    data (str): Path to the CSV file containing Olympic results data
+
+    returns:
+    pd.DataFrame: A DataFrame containing the Olympic results data
+    """
     df = pd.read_csv(data)
 
-    df['medal_score'] = df['gold'] * 5 + df['silver'] * 3 + df['bronze'] * 1
+    df['medal_score'] = (
+        df['gold'] * 5
+        + df['silver'] * 3
+        + df['bronze'] * 1
+    )
 
-    df['games_type'] = df['edition'].apply(lambda e: 'Winter' if 'Winter' in e else 'Summer')
+    df['games_type'] = df['edition'].apply(
+        lambda e: 'Winter' if 'Winter' in e else 'Summer'
+    )
+
+    return df
+
+
+def load_world_cup_data(data):
+    """
+    Loads World Cup results data from a CSV file
+    and calculates match points and World Cup scores
+
+    Determines the champion of each tournament
+    and assigns weights depending on the stage of the tournament
+
+    Parameters:
+    data (str): Path to the CSV file containing World Cup results data
+
+    Returns:
+    pd.DataFrame: A DataFrame containing the World Cup results data
+    """
+    df = pd.read_csv(data)
+
+    df['match_points'] = df['win'] * 3 + df['draw'] * 1
+
+    final_games = df[df['stage_name'].isin(['final', 'final round'])]
+
+    total_points = final_games.groupby(['tournament_id', 'team_name']).apply(
+        lambda x: x['match_points'].sum()
+    )
+
+    champs = total_points.groupby('tournament_id').idxmax().apply(
+        lambda x: x[1]
+        )
+
+    df['wc_score'] = df['stage_name'].map(wc_weights)
+    champs_df = champs.reset_index(name='champion_team')
+
+    df = df.merge(champs_df, on='tournament_id', how='left')
+
+    is_champ = df['team_name'] == df['champion_team']
+    is_final_stage = df['stage_name'].isin(['final', 'final round'])
+    df.loc[is_champ & is_final_stage, 'wc_score'] = 15
 
     return df
