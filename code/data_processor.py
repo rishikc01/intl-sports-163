@@ -15,7 +15,7 @@ wc_weights = {
 }
 
 
-def load_olympic_data(data):
+def load_olympic_data(data: str) -> pd.DataFrame:
     """
     Loads Olympic results data from a CSV file
     and calculates medal scores and game types
@@ -41,7 +41,7 @@ def load_olympic_data(data):
     return df
 
 
-def load_world_cup_data(data):
+def load_world_cup_data(data: str) -> pd.DataFrame:
     """
     Loads World Cup results data from a CSV file
     and calculates match points and World Cup scores
@@ -78,4 +78,50 @@ def load_world_cup_data(data):
     is_final_stage = df['stage_name'].isin(['final', 'final round'])
     df.loc[is_champ & is_final_stage, 'wc_score'] = 15
 
-    return df
+    best_rows = df.groupby(['tournament_id', 'team_name'])['wc_score'].idxmax()
+
+    result = df.loc[best_rows]
+
+    return result
+
+
+def load_fwc_mens(data: str) -> pd.DataFrame:
+    """
+    Loads FIFA World Cup results data for men's
+    tournaments only
+
+    Parameters:
+    data (str): Path to the CSV file containing World Cup results data
+
+    Returns:
+    pd.DataFrame: A DataFrame containing the men's World Cup
+    results data
+    """
+
+    all_results = load_world_cup_data(data)
+
+    filtered_results = all_results[all_results['tournament_name']
+                                   .str.contains("Men's")]
+
+    return filtered_results
+
+
+def load_fwc_womens(data: str) -> pd.DataFrame:
+    """
+    Loads FIFA World Cup results data for women's
+    tournaments only
+
+    Parameters:
+    data (str): Path to the CSV file containing World Cup results data
+
+    Returns:
+    pd.DataFrame: A DataFrame containing the women's World Cup
+    results data
+    """
+
+    all_results = load_world_cup_data(data)
+
+    filtered_results = all_results[all_results['tournament_name']
+                                   .str.contains("Women's")]
+
+    return filtered_results
