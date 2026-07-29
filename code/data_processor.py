@@ -129,13 +129,20 @@ def load_fwc_womens(data: str) -> pd.DataFrame:
 
 def load_worldbank_data(data: str, val_name: str) -> pd.DataFrame:
     """
-    Loads GDP data from a CSV file
+    Generic function to load CSV data from World Bank
+    datasets and convert it to a DataFrame
+
+    Called by load_gdp_data, load_gdp_per_capita_data, and load_population_data
 
     Parameters:
-    data (str): Path to the CSV file containing GDP data
+    data (str): Path to the CSV file containing World Bank data
+    val_name (str): Name of the value column in the resulting DataFrame
+
+    Note these parameters are passed in by the calling functions
 
     Returns:
-    pd.DataFrame: A DataFrame containing the GDP data
+    pd.DataFrame: A DataFrame containing the World Bank data
+
     """
     df = pd.read_csv(data, skiprows=4)
 
@@ -154,12 +161,39 @@ def load_worldbank_data(data: str, val_name: str) -> pd.DataFrame:
 
 
 def load_gdp_data(data: str) -> pd.DataFrame:
+    """
+    Loads GDP data from a World Bank CSV file
+
+    Parameters:
+    data (str): Path to the CSV file containing World Bank GDP data
+
+    Returns:
+    pd.DataFrame: A DataFrame containing the World Bank GDP data
+    """
     return load_worldbank_data(data, 'GDP Value')
 
 
 def load_gdp_per_capita_data(data: str) -> pd.DataFrame:
+    """
+    Loads GDP per capita data from a World Bank CSV file
+
+    Parameters:
+    data (str): Path to the CSV file containing World Bank GDP data
+
+    Returns:
+    pd.DataFrame: A DataFrame containing the World Bank GDP data
+    """
     return load_worldbank_data(data, 'GDP per Capita Value')
 
 
 def load_population_data(data: str) -> pd.DataFrame:
+    """
+    Loads population data from a World Bank CSV file
+
+    Parameters:
+    data (str): Path to the CSV file containing World Bank population data
+
+    Returns:
+    pd.DataFrame: A DataFrame containing the World Bank population data
+    """
     return load_worldbank_data(data, 'Population Value')
