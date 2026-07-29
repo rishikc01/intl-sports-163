@@ -125,3 +125,41 @@ def load_fwc_womens(data: str) -> pd.DataFrame:
                                    .str.contains("Women's")]
 
     return filtered_results
+
+
+def load_worldbank_data(data: str, val_name: str) -> pd.DataFrame:
+    """
+    Loads GDP data from a CSV file
+
+    Parameters:
+    data (str): Path to the CSV file containing GDP data
+
+    Returns:
+    pd.DataFrame: A DataFrame containing the GDP data
+    """
+    df = pd.read_csv(data, skiprows=4)
+
+    year_cols = [c for c in df.columns if c.isdigit()]
+
+    long_df = df.melt(
+        id_vars=['Country Name', 'Country Code'],
+        value_vars=year_cols,
+        var_name='Year',
+        value_name=val_name,
+    )
+
+    long_df['Year'] = long_df['Year'].astype(int)
+
+    return long_df
+
+
+def load_gdp_data(data: str) -> pd.DataFrame:
+    return load_worldbank_data(data, 'GDP Value')
+
+
+def load_gdp_per_capita_data(data: str) -> pd.DataFrame:
+    return load_worldbank_data(data, 'GDP per Capita Value')
+
+
+def load_population_data(data: str) -> pd.DataFrame:
+    return load_worldbank_data(data, 'Population Value')
