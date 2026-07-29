@@ -1,5 +1,7 @@
 import pandas as pd
 
+# Weights for each round of the World Cup tournament, meant to be
+# a way to weigh team performance
 wc_weights = {
     'group stage': 1,
     'second group stage': 2,
@@ -9,9 +11,10 @@ wc_weights = {
     'semi-finals': 8,
     'semi-final': 8,
     'third-place match': 8,
+    # final round is used for pre 1950,
+    # where the final round was a round robin group stage
     'final round': 10,
-    'final': 12,
-    'champ': 15
+    'final': 12
 }
 
 
