@@ -51,15 +51,20 @@ def standardize_country(name: str) -> str:
     return country_mapping.get(name, name)
 
 
-def merge_olympic_worldbank(olympic_data: pd.DataFrame,
-                            gdp_data: pd.DataFrame,
-                            gdp_pcap_data: pd.DataFrame,
-                            pop_data: pd.DataFrame) -> pd.DataFrame:
+def merge_with_worldbank(sport_data: pd.DataFrame,
+                         gdp_data: pd.DataFrame,
+                         gdp_pcap_data: pd.DataFrame,
+                         pop_data: pd.DataFrame) -> pd.DataFrame:
     """
-    Merges Olympic data with World Bank data on country and year
+    Generic function to merge sports data with the three
+    World Bank Datasets (GDP, GDP per capita, and population)
+    based on country and year
+
+    This function is called by the merge_olympic_worldbank
+    and merge_worldcup_worldbank functions
 
     Parameters:
-    olympic_data (pd.DataFrame): DataFrame containing Olympic data
+    sport_data (pd.DataFrame): DataFrame containing sports data
     gdp_data (pd.DataFrame): DataFrame containing GDP data
     gdp_pcap_data (pd.DataFrame): DataFrame containing GDP per capita data
     pop_data (pd.DataFrame): DataFrame containing population data
@@ -67,11 +72,11 @@ def merge_olympic_worldbank(olympic_data: pd.DataFrame,
     Returns:
     pd.DataFrame: A DataFrame containing the merged data
     """
-    olympic_data['country'] = (olympic_data['country']
-                               .apply(standardize_country))
+    sport_data['country'] = (sport_data['country']
+                             .apply(standardize_country))
 
     merged_df = pd.merge(
-        olympic_data,
+        sport_data,
         gdp_data,
         left_on=['country', 'year'],
         right_on=['Country Name', 'Year'],
@@ -101,6 +106,42 @@ def merge_olympic_worldbank(olympic_data: pd.DataFrame,
         columns=['Country Name', 'Country Code', 'Year'])
 
     return merged_df
+
+
+def merge_olympic_worldbank(olympic_data, gdp_data, gdp_pcap_data, pop_data):
+    """
+    Merges Olympic data with the three
+    World Bank datasets
+
+    Parameters:
+    olympic_data (pd.DataFrame): DataFrame containing Olympic data
+    gdp_data (pd.DataFrame): DataFrame containing GDP data
+    gdp_pcap_data (pd.DataFrame): DataFrame containing GDP per capita data
+    pop_data (pd.DataFrame): DataFrame containing population data
+
+    Returns:
+    pd.DataFrame: A DataFrame containing the merged data
+    """
+    return merge_with_worldbank(olympic_data, gdp_data,
+                                gdp_pcap_data, pop_data)
+
+
+def merge_worldcup_worldbank(worldcup_data, gdp_data, gdp_pcap_data, pop_data):
+    """
+    Merges World Cup data with the three
+    World Bank datasets
+
+    Parameters:
+    worldcup_data (pd.DataFrame): DataFrame containing World Cup data
+    gdp_data (pd.DataFrame): DataFrame containing GDP data
+    gdp_pcap_data (pd.DataFrame): DataFrame containing GDP per capita data
+    pop_data (pd.DataFrame): DataFrame containing population data
+
+    Returns:
+    pd.DataFrame: A DataFrame containing the merged data
+    """
+    return merge_with_worldbank(worldcup_data, gdp_data,
+                                gdp_pcap_data, pop_data)
 
 
 def main():
