@@ -60,6 +60,8 @@ def load_world_cup_data(data: str) -> pd.DataFrame:
     """
     df = pd.read_csv(data)
 
+    df['year'] = df['tournament_id'].apply(lambda x: int(x.split('-')[1]))
+
     df['match_points'] = df['win'] * 3 + df['draw'] * 1
 
     final_games = df[df['stage_name'].isin(['final', 'final round'])]

@@ -2,15 +2,16 @@ from pathlib import Path
 import pandas as pd
 
 from data_processor import (
-    # load_fwc_mens,
+    load_fwc_mens,
     # load_fwc_womens,
-    load_olympic_data,
+    # load_olympic_data,
     load_gdp_data,
     # load_gdp_percap_data,
     # load_pop_data
 )
 
 ROOT = Path(__file__).resolve().parent.parent
+WORLD_CUP_DATA_PATH = ROOT/'data'/'team_appearances.csv'
 OLYMPICS_DATA_PATH = ROOT/'data'/'Olympic_Medal_Tally_History.csv'
 GDP_DATA_PATH = (ROOT/'data' /
                  'gdp_data'/'API_NY.GDP.MKTP.CD_DS2_en_csv_v2_234.csv')
@@ -43,7 +44,28 @@ country_mapping = {
     "ROC": "Russian Federation",
     # Historically in sports West Germany's accompishments
     # are counted towards Germany's total, so we will combine in this instance
-    "West Germany": "Germany"
+    "West Germany": "Germany",
+
+    # World Cup Mappings
+
+    'South Korea': 'Korea, Rep.',
+    'North Korea': "Korea, Dem. People's Rep.",
+    'Ivory Coast': "Cote d'Ivoire",
+    'Iran': 'Iran, Islamic Rep.',
+    'Turkey': 'Turkiye',
+    'Russia': 'Russian Federation',
+    'Republic of Ireland': 'Ireland',
+    'Czech Republic': 'Czechia',
+
+    # In the World Cup, England Scotland, Wales, and Northern Ireland
+    # compete as separate teams, but in the World Bank data they are all
+    # represented as the United Kingdom. For the purposes of this project,
+    #  we will combine them under the United Kingdom
+
+    "England": "United Kingdom",
+    "Scotland": "United Kingdom",
+    "Wales": "United Kingdom",
+    "Northern Ireland": "United Kingdom"
 }
 
 
@@ -72,6 +94,9 @@ def merge_with_worldbank(sport_data: pd.DataFrame,
     Returns:
     pd.DataFrame: A DataFrame containing the merged data
     """
+    if 'team_name' in sport_data.columns:
+        sport_data = (sport_data.rename(columns={'team_name': 'country'}))
+
     sport_data['country'] = (sport_data['country']
                              .apply(standardize_country))
 
@@ -122,8 +147,14 @@ def merge_olympic_worldbank(olympic_data, gdp_data, gdp_pcap_data, pop_data):
     Returns:
     pd.DataFrame: A DataFrame containing the merged data
     """
-    return merge_with_worldbank(olympic_data, gdp_data,
-                                gdp_pcap_data, pop_data)
+    merged_df = merge_with_worldbank(olympic_data, gdp_data,
+                                     gdp_pcap_data, pop_data)
+
+    merged_df["medals_per_capita"] = (
+        merged_df["medal_score"] / merged_df["Population Value"]
+    ) * 1_000_000
+
+    return merged_df
 
 
 def merge_worldcup_worldbank(worldcup_data, gdp_data, gdp_pcap_data, pop_data):
@@ -145,14 +176,18 @@ def merge_worldcup_worldbank(worldcup_data, gdp_data, gdp_pcap_data, pop_data):
 
 
 def main():
-    olympic_countries = load_olympic_data(OLYMPICS_DATA_PATH)
-    olympic_countries = set(olympic_countries['country']
-                            .apply(standardize_country).unique())
+    # olympic_countries = load_olympic_data(OLYMPICS_DATA_PATH)
+    # olympic_countries = set(olympic_countries['country']
+    #                         .apply(standardize_country).unique())
+
+    world_cup_countries = load_fwc_mens(WORLD_CUP_DATA_PATH)
+    world_cup_countries = set(world_cup_countries['team_name']
+                              .apply(standardize_country).unique())
 
     gdp_data = load_gdp_data(GDP_DATA_PATH)
     gdp_countries = set(gdp_data['Country Name'])
 
-    print(olympic_countries - gdp_countries)
+    print(world_cup_countries - gdp_countries)
 
 
 main()
