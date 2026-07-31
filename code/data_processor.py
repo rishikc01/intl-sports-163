@@ -1,3 +1,36 @@
+"""
+This file implements 8 total functions, however most are wrappers
+for heavier generic functions
+
+load_olympic_data takes in a path to Olympic data and returns a
+Pandas dataframe with the Olympic CSV data, and an additional column
+for the country's medal score, which is just a way to assign points
+based on the medal tally
+
+load_world_cup takes in a path to World Cup data and returns a
+Pandas dataframe with the World Cup CSV data turned into a dataframe
+with each team's wc_score, which is a score assigned to each team based
+on how far they progressed into the tournament
+
+load_fwc_mens is a wrapper function that returns only the Men's
+World Cup tournament results
+
+load_fwc_womens is a wrapper function that returns only the Women's
+World Cup tournament results
+
+load_worldbank_data is a generic function that takes in a path to
+World Bank data and returns whatever the specific World Bank data is
+
+load_gdp_data is a wrapper function that returns specifically GDP
+World Bank data
+
+load_gdp_pcap_data is a wrapper function that returns specifically
+GDP Per capita World Bank data
+
+load_pop_data is a wrapper function that returns specifically
+Population World Bank data
+"""
+
 import pandas as pd
 
 # Weights for each round of the World Cup tournament, meant to be
