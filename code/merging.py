@@ -1,15 +1,24 @@
+"""
+This file implements 4 total functions for standardizing country names
+and merging Olympic and World Cup datasets with World Bank GDP,
+GDP per capita, and population data.
+
+standardize_country maps inconsistent country names across the sports and
+World Bank datasets so merges join on a single normalized country value.
+
+merge_with_worldbank is a generic merge helper used by the Olympic and
+World Cup merge functions.
+
+merge_olympic_worldbank merges Olympic results with World Bank data and
+calculates medals per capita using population.
+
+merge_worldcup_worldbank merges World Cup results with World Bank data.
+"""
+
 from pathlib import Path
 import pandas as pd
 
-from data_processor import (
-    load_fwc_mens,
-    # load_fwc_womens,
-    # load_olympic_data,
-    load_gdp_data,
-    # load_gdp_percap_data,
-    # load_pop_data
-)
-
+# I had to look this up because I couldn't figure out an easy way to do this
 ROOT = Path(__file__).resolve().parent.parent
 WORLD_CUP_DATA_PATH = ROOT/'data'/'team_appearances.csv'
 OLYMPICS_DATA_PATH = ROOT/'data'/'Olympic_Medal_Tally_History.csv'
@@ -173,21 +182,3 @@ def merge_worldcup_worldbank(worldcup_data, gdp_data, gdp_pcap_data, pop_data):
     """
     return merge_with_worldbank(worldcup_data, gdp_data,
                                 gdp_pcap_data, pop_data)
-
-
-def main():
-    # olympic_countries = load_olympic_data(OLYMPICS_DATA_PATH)
-    # olympic_countries = set(olympic_countries['country']
-    #                         .apply(standardize_country).unique())
-
-    world_cup_countries = load_fwc_mens(WORLD_CUP_DATA_PATH)
-    world_cup_countries = set(world_cup_countries['team_name']
-                              .apply(standardize_country).unique())
-
-    gdp_data = load_gdp_data(GDP_DATA_PATH)
-    gdp_countries = set(gdp_data['Country Name'])
-
-    print(world_cup_countries - gdp_countries)
-
-
-main()

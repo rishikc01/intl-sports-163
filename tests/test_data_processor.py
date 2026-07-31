@@ -11,7 +11,7 @@ to the dataframe, and if the math lines up with what we'd expect
 
 
 test_game_type takes in a path to tiny_olympic.csv
-It tests whether the games_type column is correctly added to the 
+It tests whether the games_type column is correctly added to the
 dataframe, and if the string extraction worked correctly to set it
 to the correct type of Olympic games
 
@@ -24,7 +24,8 @@ dataframe, and if the champion is correctly detected.
 import sys
 from pathlib import Path
 
-
+# Unfortunately couldn't figure out a way to do this so I had to look this up
+# It feels like there should be an easier way to do this
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'code'))
 from data_processor import load_olympic_data, load_world_cup_data  # noqa: E402
 OLYMPIC_DATA_FILE = (Path(__file__).resolve().parent
