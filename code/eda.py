@@ -5,7 +5,9 @@ from data_processor import (
     load_gdp_per_capita_data,
     load_population_data
 )
-
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 from merging import merge_olympic_worldbank, merge_worldcup_worldbank
 from pathlib import Path
 
@@ -47,6 +49,65 @@ def main():
 
     print("merged olympics size:" + str(merged_olympic.shape))
     print("merged worldcup size:" + str(merged_worldcup.shape))
+
+    print(merged_olympic.isna().sum())
+
+    print(merged_worldcup.isna().sum())
+
+    print(merged_olympic[['medal_score',
+                          'Population Value',
+                          'GDP Value', 'GDP per Capita Value']].describe())
+
+    print(merged_worldcup[['wc_score',
+                           'Population Value',
+                           'GDP Value', 'GDP per Capita Value']].describe())
+
+    plt.figure(figsize=(10, 6))
+    sns.scatterplot(data=merged_olympic, x='GDP Value',
+                    y='medal_score')
+
+    plt.xscale('log')
+
+    plt.title('National Wealth vs. Olympic Performance')
+    plt.xlabel('GDP (Log Scale)')
+    plt.ylabel('Olympic Medal Score')
+    plt.show()
+
+    plt.figure(figsize=(10, 6))
+    sns.scatterplot(data=merged_olympic, x='GDP per Capita Value',
+                    y='medals_per_capita')
+
+    plt.xscale('log')
+    plt.title('Wealth Per Citizen vs. Medals Per Citizen')
+    plt.xlabel('GDP per Capita (Log Scale)')
+    plt.ylabel('Medals per Capita')
+    plt.show()
+
+    country_avg = merged_worldcup.groupby('country')['wc_score'].mean()
+    country_gdp = (
+        merged_worldcup.groupby('country')['GDP per Capita Value'].mean())
+
+    combined = pd.concat([country_avg, country_gdp], axis=1)
+    combined.dropna(subset=['GDP per Capita Value'], inplace=True)
+    combined.sort_values(by='wc_score', ascending=False, inplace=True)
+
+    plt.figure(figsize=(10, 12))
+    sns.barplot(data=combined, y=combined.index, x='wc_score')
+    plt.xlabel('Average World Cup Score')
+    plt.ylabel('Country')
+    plt.title('Top 20 Countries by Average World Cup Performance')
+    plt.show()
+
+    plt.figure(figsize=(10, 6))
+    sns.scatterplot(data=merged_worldcup, x='GDP Value', y='wc_score')
+    plt.xscale('log')
+    plt.title('National Wealth vs. World Cup Performance')
+    plt.xlabel('GDP (Log Scale)')
+    plt.ylabel('World Cup Score')
+    plt.show()
+
+    print(merged_worldcup.shape)
+    print(merged_olympic.shape)
 
 
 if __name__ == "__main__":

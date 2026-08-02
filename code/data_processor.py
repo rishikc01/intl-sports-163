@@ -99,13 +99,13 @@ def load_world_cup_data(data: str) -> pd.DataFrame:
 
     final_games = df[df['stage_name'].isin(['final', 'final round'])]
 
-    total_points = final_games.groupby(['tournament_id', 'team_name']).apply(
-        lambda x: x['match_points'].sum()
-    )
+    total_points = final_games.groupby(
+        ['tournament_id', 'team_name']
+    )['match_points'].sum()
 
     champs = total_points.groupby('tournament_id').idxmax().apply(
         lambda x: x[1]
-        )
+    )
 
     df['wc_score'] = df['stage_name'].map(wc_weights)
     champs_df = champs.reset_index(name='champion_team')
