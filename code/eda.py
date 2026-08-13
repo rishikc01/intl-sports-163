@@ -1,3 +1,13 @@
+"""
+Runs the Exploratory Data Analysis for the project
+
+main loads the data, merges it, and then runs the basic
+analysis on the data that's required by the EDA step
+
+main also produces 4 plots that are used in the EDA step
+of the project.
+"""
+
 from data_processor import (
     load_olympic_data,
     load_world_cup_data,
