@@ -1,5 +1,8 @@
 """
+Runs the final Analysis for the project
 
+main loads the data, merges it, and then runs correlation analysis
+to get answers for all 4 RQs in the project.
 """
 from data_processor import (
     load_olympic_data,
