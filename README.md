@@ -34,9 +34,12 @@ files that load data
   using a dict to standardize the country names across the datasets
 - code/eda.py - Gets the necessary data and visualizations for the EDA portion of the Assignment
 - code/analysis.py - Gets the necessary data for the final portion of the project. Primarily correlation coefficients and p values
+- tests/test_data_processor.py - Tests verifying data_processor loads data properly using a smaller csv. Tests if World Cup champions are correctly
+  detected, and if Olympic medal scores are correctly calculated
 
 **Running the Project**
-The project is primarily ran in both eda.py and analysis.py, while the other 2 code files provide the necessary functions to support those files
+The project is primarily ran in both eda.py and analysis.py, while the other 2 code files provide the necessary functions to support those files.
+There is also test_data_processor.py, which is a runnable testing file
 
 eda.py - 
 ```
@@ -48,4 +51,10 @@ analysis.py -
 ```
 cd code
 python analysis.py
+```
+
+test_data_processor.py - 
+```
+cd tests
+python test_data_processor.py
 ```
